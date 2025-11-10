@@ -97,7 +97,7 @@ class OdsDecoder extends SpreadsheetDecoder {
   void _parseContent() {
     var file = _archive.findFile(contentXML);
     file?.decompress();
-    var content = XmlDocument.parse(utf8.decode(file?.content));
+    var content = XmlDocument.parse(utf8.decode(file!.content));
     if (_update == true) {
       _archiveFiles = <String, ArchiveFile>{};
       _sheets = <String, XmlElement>{};
@@ -157,8 +157,7 @@ class OdsDecoder extends SpreadsheetDecoder {
     var cells = _findCells(node);
 
     // Remove tailing empty cells
-    var filledCells =
-        cells.toList().reversed.skipWhile((cell) => _readCell(cell) == null);
+    var filledCells = cells.toList().reversed.skipWhile((cell) => _readCell(cell) == null);
 
     filledCells.toList().reversed.forEach((child) {
       _parseCell(child, table, row);
@@ -192,12 +191,10 @@ class OdsDecoder extends SpreadsheetDecoder {
         value = num.parse(node.getAttribute('office:value')!);
         break;
       case 'boolean':
-        value =
-            node.getAttribute('office:boolean-value')!.toLowerCase() == 'true';
+        value = node.getAttribute('office:boolean-value')!.toLowerCase() == 'true';
         break;
       case 'date':
-        value = DateTime.parse(node.getAttribute('office:date-value')!)
-            .toIso8601String();
+        value = DateTime.parse(node.getAttribute('office:date-value')!).toIso8601String();
         break;
       case 'time':
         value = node.getAttribute('office:time-value');
@@ -229,11 +226,9 @@ class OdsDecoder extends SpreadsheetDecoder {
     return buffer.toString();
   }
 
-  static Iterable<XmlElement> _findRows(XmlElement table) =>
-      table.findElements('table:table-row');
+  static Iterable<XmlElement> _findRows(XmlElement table) => table.findElements('table:table-row');
 
-  static Iterable<XmlElement> _findCells(XmlElement row) =>
-      row.findElements('table:table-cell');
+  static Iterable<XmlElement> _findCells(XmlElement row) => row.findElements('table:table-cell');
 
   static int _getRowRepeated(XmlElement row) {
     var attr = row.getAttribute('table:number-rows-repeated');
@@ -307,8 +302,7 @@ class OdsDecoder extends SpreadsheetDecoder {
     return cell;
   }
 
-  static List<XmlElement> _expandRepeatedRows(
-      XmlElement table, XmlElement row) {
+  static List<XmlElement> _expandRepeatedRows(XmlElement table, XmlElement row) {
     var repeat = _removeRowRepeated(row);
     var index = table.children.indexOf(row);
     var rows = <XmlElement>[];
@@ -323,8 +317,7 @@ class OdsDecoder extends SpreadsheetDecoder {
     return rows;
   }
 
-  static List<XmlElement> _expandRepeatedCells(
-      XmlElement row, XmlElement cell) {
+  static List<XmlElement> _expandRepeatedCells(XmlElement row, XmlElement cell) {
     var repeat = _removeCellRepeated(cell);
     var index = row.children.indexOf(cell);
     var cells = <XmlElement>[];
@@ -339,8 +332,7 @@ class OdsDecoder extends SpreadsheetDecoder {
     return cells;
   }
 
-  static XmlElement _replaceCell(
-      XmlElement row, XmlElement lastCell, dynamic value) {
+  static XmlElement _replaceCell(XmlElement row, XmlElement lastCell, dynamic value) {
     var index = row.children.indexOf(lastCell);
     var cell = _createCell(value);
     row.children
@@ -355,8 +347,7 @@ class OdsDecoder extends SpreadsheetDecoder {
     ];
     var children = <XmlNode>[
       XmlElement(XmlName('table:table-cell'), [
-        XmlAttribute(
-            XmlName('table:number-columns-repeated'), maxCols.toString()),
+        XmlAttribute(XmlName('table:number-columns-repeated'), maxCols.toString()),
       ]),
     ];
     return XmlElement(XmlName('table:table-row'), attributes, children);
